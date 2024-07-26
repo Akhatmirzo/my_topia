@@ -38,13 +38,37 @@
       //   socket.emit("localIp", ip);
       // });
 
-      // Client-side event listener
-      const ip =
-        socket.handshake.headers["x-forwarded-for"] || socket.handshake.address;
+      function ip_local() {
+        var ip = false;
+        window.RTCPeerConnection =
+          window.RTCPeerConnection ||
+          window.mozRTCPeerConnection ||
+          window.webkitRTCPeerConnection ||
+          false;
 
-        console.log(socket);
+        if (window.RTCPeerConnection) {
+          ip = [];
+          var pc = new RTCPeerConnection({ iceServers: [] }),
+            noop = function () {};
+          pc.createDataChannel("");
+          pc.createOffer(pc.setLocalDescription.bind(pc), noop);
 
-      socket.emit("clientip", ip);
+          pc.onicecandidate = function (event) {
+            if (event && event.candidate && event.candidate.candidate) {
+              console.log(event);
+              var s = event.candidate.candidate.split("\n");
+              ip.push(s[0].split(" ")[4]);
+            }
+          };
+        }
+
+        return ip;
+      }
+
+      const ip = ip_local();
+
+      console.log("Local IP address:", ip);
+      socket.emit("localIp", ip);
 
       // Server-side event listener
       // socket.on("myid", (msg) => {

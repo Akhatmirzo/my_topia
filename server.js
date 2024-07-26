@@ -10,6 +10,7 @@ const cors = require("@fastify/cors");
 const multer = require("fastify-multer");
 fastify.register(multer.contentParser);
 const path = require("path");
+const { getLocalIPAddress } = require("./utils/helper");
 
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "/uploads"),
@@ -89,13 +90,12 @@ fastify.ready((err) => {
     console.log("Client connected with IP, line 90: ", clientIp);
     // console.log(socket.handshake);
 
-    socket.on("clientip", (ip) => {
-      console.log("Local IP, Line 94: " + ip);
-    });
+    // Get local IP
+    const ip = getLocalIPAddress()
 
-    // socket.on("localIp", (ip) => {
-    //   console.log(ip);
-    // });
+    socket.on("localIp", (ip) => {
+      console.log(ip);
+    });
 
     // Ulanishni uzish
     socket.on("disconnect", () => {
