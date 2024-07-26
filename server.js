@@ -85,8 +85,7 @@ fastify.ready((err) => {
   fastify.io.on("connection", (socket) => {
     console.log("A user connected", socket.id);
     fastify.io.to(socket.id).emit("myid", socket.id);
-    const clientIp =
-    socket.request.connection._peername;
+    const clientIp = socket.request.connection._peername;
     console.log("Client connected with IP, line 90: ", clientIp);
     // console.log(socket.handshake);
 
@@ -120,10 +119,19 @@ mongoose
   });
 
 //? Runs the server
-fastify.listen({ port: process.env.PORT || 8000 }, function (err, address) {
+// fastify.listen({ port: process.env.PORT || 8000 }, function (err, address) {
+//   if (err) {
+//     fastify.log.error(err);
+//     process.exit(1);
+//   }
+//   console.log(`Server is running on port ${process.env.PORT || 8000}`);
+// });
+
+fastify.listen(process.env.PORT || 8000, "0.0.0.0", (err) => {
   if (err) {
-    fastify.log.error(err);
+    console.error(err);
     process.exit(1);
   }
+
   console.log(`Server is running on port ${process.env.PORT || 8000}`);
 });
