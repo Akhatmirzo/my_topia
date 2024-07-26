@@ -42,7 +42,7 @@ function ProductRoute(fastify, options, done) {
   });
 
   fastify.get("/pagination", {
-    preHandler: [auth(["admin"])],
+    preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Product"],
       headers: {
@@ -65,7 +65,7 @@ function ProductRoute(fastify, options, done) {
           category: {
             type: "string",
             default: "",
-          }
+          },
         },
       },
     },
@@ -73,7 +73,7 @@ function ProductRoute(fastify, options, done) {
   });
 
   fastify.get("/one/:id", {
-    preHandler: [auth(["admin"])],
+    preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Product"],
     },
@@ -97,12 +97,12 @@ function ProductRoute(fastify, options, done) {
   });
 
   fastify.put("/deleted/:id", {
-    preHandler: [auth(["admin",])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Product"],
     },
     handler: errorHandler(DeleteSwapProduct),
-  })
+  });
 
   done();
 }

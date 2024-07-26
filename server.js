@@ -2,7 +2,10 @@ const dotenv = require("dotenv");
 dotenv.config();
 const { default: mongoose } = require("mongoose");
 const fastify = require("fastify")();
+const fastifyIO = require("fastify-socket.io");
+const requestIp = require("request-ip");
 const cors = require("@fastify/cors");
+
 //? Multer setup
 const multer = require("fastify-multer");
 fastify.register(multer.contentParser);
@@ -11,6 +14,13 @@ const path = require("path");
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "/uploads"),
   prefix: "/uploads/", // optional: default '/'
+});
+
+fastify.register(fastifyIO, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
 
 fastify.register(cors, {
@@ -27,9 +37,7 @@ fastify.register(require("@fastify/swagger"), {
       description: "This is the page of MayTopia api list",
       version: "1.0.0",
     },
-    tags: [
-      { name: "Admin", description: "Admin related end-points" },
-    ],
+    tags: [{ name: "Admin", description: "Admin related end-points" }],
   },
 });
 
@@ -39,12 +47,20 @@ fastify.register(require("@fastify/swagger-ui"), {
 });
 
 //? Routes
-fastify.get("/", { schema: { tags: ["API"] } }, (req, res) => {
-  res.send("Welcome to the API");
+fastify.get("/start", { schema: { tags: ["API"] } }, (req, res) => {
+  // res.send("Welcome to the API");
+});
+
+fastify.get("/", (req, res) => {
+  res.sendFile("./index.html");
 });
 
 fastify.register(require("./routes/AdminRoute"), {
   prefix: "/api/admin",
+});
+
+fastify.register(require("./routes/EmployerRoute"), {
+  prefix: "/api/employer",
 });
 
 fastify.register(require("./routes/CategoriesRoute"), {
@@ -59,9 +75,35 @@ fastify.register(require("./routes/WebPageRoute"), {
   prefix: "/api/webpage",
 });
 
-// fastify.register(require("./routes/OrdersRoute"), {
-//   prefix: "/api/orders",
-// });
+fastify.register(require("./routes/OrdersRoute"), {
+  prefix: "/api/orders",
+});
+
+fastify.ready((err) => {
+  if (err) throw err;
+
+  fastify.io.on("connection", (socket) => {
+    console.log("A user connected", socket.id);
+    fastify.io.to(socket.id).emit("myid", socket.id);
+    const clientIp =
+    socket.request.connection._peername;
+    console.log("Client connected with IP, line 90: ", clientIp);
+    // console.log(socket.handshake);
+
+    socket.on("clientip", (ip) => {
+      console.log("Local IP, Line 94: " + ip);
+    });
+
+    // socket.on("localIp", (ip) => {
+    //   console.log(ip);
+    // });
+
+    // Ulanishni uzish
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
+    });
+  });
+});
 
 //? Connection to the database
 mongoose

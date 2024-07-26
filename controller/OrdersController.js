@@ -29,7 +29,7 @@ exports.CreateOrder = async (req, res) => {
     })
   );
 
-  if (!orderProducts) {
+  if (!orderProducts || orderProducts.length === 0) {
     return res.status(400).send({
       success: false,
       message: "products are required",
@@ -40,7 +40,6 @@ exports.CreateOrder = async (req, res) => {
 
   const order = new Order({
     total_price,
-    client_id: req.userId,
     products: orderProducts,
   });
 
@@ -57,9 +56,9 @@ exports.CreateOrder = async (req, res) => {
 exports.GetOrders = async (req, res) => {
   let handler = {};
 
-  if (req.role === "client") {
-    handler = { client_id: req.userId };
-  }
+  // if (req.role === "client") {
+  //   handler = { client_id: req.userId };
+  // }
 
   const orders = await Order.find(handler);
 
@@ -80,9 +79,9 @@ exports.GetOrder = async (req, res) => {
   const { id } = req.params;
   let handler = {};
 
-  if (req.role === "client") {
-    handler = { client_id: req.userId };
-  }
+  // if (req.role === "client") {
+  //   handler = { client_id: req.userId };
+  // }
 
   const order = await Order.findOne({
     _id: id,

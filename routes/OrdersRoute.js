@@ -28,13 +28,13 @@ function OrdersRoute(fastify, options, done) {
   });
 
   fastify.get("/all", {
-    preHandler: [auth(["client", "admin"])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Order"],
       headers: {
         authorization: {
           type: "string",
-          description: "Client Token or Admin Token",
+          description: "Admin Token",
         },
       },
     },
@@ -42,13 +42,13 @@ function OrdersRoute(fastify, options, done) {
   })
 
   fastify.get("/one/:id", {
-    preHandler: [auth(["client", "admin"])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Order"],
       headers: {
         authorization: {
           type: "string",
-          description: "Client Token or Admin Token",
+          description: "Admin Token",
         },
       },
     },

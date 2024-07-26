@@ -37,6 +37,22 @@ const auth = (permissions) => {
               next();
               break;
 
+            case "employer":
+              const employer = await Employer.findOne({ phoneNumber });
+
+              if (!employer) {
+                return res.status(401).send({
+                  success: false,
+                  message: "Unathorized Employer",
+                });
+              }
+
+              req.userId = employer._id;
+              req.role = role;
+
+              next();
+              break;
+
             default:
               return res.status(401).send({
                 success: false,

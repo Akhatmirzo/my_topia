@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit aliquam
+      molestias recusandae eveniet laudantium explicabo repudiandae, similique
+      odit? Fugit, tenetur.
+    </h1>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/DetectRTC.js"></script>
+    <script>
+      const socket = io();
+
+      // function getLocalIP(callback) {
+      //   const pc = new RTCPeerConnection({ iceServers: [] });
+      //   pc.createDataChannel("");
+      //   pc.createOffer(pc.setLocalDescription.bind(pc), () => {});
+      //   pc.onicecandidate = (ice) => {
+      //     if (ice && ice.candidate && ice.candidate.candidate) {
+      //       const myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(
+      //         ice.candidate.candidate
+      //       )[1];
+      //       callback(myIP);
+      //       pc.onicecandidate = () => {};
+      //     }
+      //   };
+      // }
+
+      // getLocalIP((ip) => {
+      //   console.log("Local IP address:", ip);
+      //   // Local IP manzilni serverga jo'natish
+      //   socket.emit("localIp", ip);
+      // });
+
+      // Client-side event listener
+      const ip =
+        socket.handshake.headers["x-forwarded-for"] || socket.handshake.address;
+
+        console.log(socket);
+
+      socket.emit("clientip", ip);
+
+      // Server-side event listener
+      // socket.on("myid", (msg) => {
+      //   console.log(msg);
+
+      //   fetch("https://ipinfo.io/json")
+      //     .then((response) => response.json())
+      //     .then((data) => {
+      //       console.log("Your public IP address:", data.ip);
+      //       socket.emit("clientip", data.ip);
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error:", error);
+      //     });
+      // });
+    </script>
+  </body>
+</html>
