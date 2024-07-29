@@ -85,17 +85,6 @@ fastify.ready((err) => {
 
   fastify.io.on("connection", (socket) => {
     console.log("A user connected", socket.id);
-    fastify.io.to(socket.id).emit("myid", socket.id);
-    const clientIp = socket.request.connection._peername;
-    console.log("Client connected with IP, line 90: ", clientIp);
-    // console.log(socket.handshake);
-
-    // Get local IP
-    const ip = getLocalIPAddress()
-
-    socket.on("localIp", (ip) => {
-      console.log(ip);
-    });
 
     // Ulanishni uzish
     socket.on("disconnect", () => {

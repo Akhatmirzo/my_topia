@@ -58,8 +58,7 @@ exports.loginAdmin = async (req, res) => {
   }
 
   try {
-    const findAdmin = await Admin.findOne({ phoneNumber }).exec();
-
+    const findAdmin = await Admin.findOne({ phoneNumber });
 
     if (!findAdmin) {
       return res.status(404).send({
@@ -70,7 +69,6 @@ exports.loginAdmin = async (req, res) => {
 
     if (findAdmin) {
       const isMatch = await bcrypt.compare(password, findAdmin.password);
-
 
       if (!isMatch) {
         return res.status(400).send({
