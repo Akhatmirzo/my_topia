@@ -89,6 +89,7 @@ exports.loginAdmin = async (req, res) => {
         success: true,
         message: "Admin successfully authenticated",
         token,
+        role: "admin",
       });
     }
   } catch (error) {

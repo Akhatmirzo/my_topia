@@ -64,7 +64,7 @@ exports.employerLogin = async (req, res) => {
 
   const token = jwt.sign(
     { phoneNumber, role: "employer" },
-    process.env.SECRET_KEY
+    process.env.jwt_secret_key
   );
 
   return res.status(200).send({
