@@ -82,7 +82,7 @@ exports.loginAdmin = async (req, res) => {
           phoneNumber: findAdmin.phoneNumber,
           role: "admin",
         },
-        process.env.JWT_SECRET_KEY
+        process.env.jwt_secret_key
       );
 
       return res.status(200).send({
