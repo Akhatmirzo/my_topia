@@ -22,6 +22,7 @@ function EmployerRoute(fastify, options, done) {
             type: "string",
             default: "testemp",
           },
+          password: { type: "string" },
         },
       },
 
@@ -41,7 +42,8 @@ function EmployerRoute(fastify, options, done) {
       body: {
         type: "object",
         properties: {
-          phoneNumber: { type: "string", default: "+998-90-456-15-26" },
+          phoneNumber: { type: "string", default: "+998904561526" },
+          password: { type: "string" },
         },
       },
     },
