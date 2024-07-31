@@ -114,7 +114,7 @@ exports.UpdateOrder = async (req, res) => {
   }
 
   const order = await Order.findOneAndUpdate(
-    { _id: id, client_id: req.userId },
+    { _id: id },
     {
       $set: {
         products,

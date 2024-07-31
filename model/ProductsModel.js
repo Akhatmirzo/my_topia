@@ -22,8 +22,12 @@ const ProductSchema = mongoose.Schema({
     required: true,
   },
   characteristics: {
-    type: Object,
+    type: Array,
     // required: true,
+  },
+  addition: {
+    type: Array,
+    default: [],
   },
   deleted: {
     type: Boolean,

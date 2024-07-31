@@ -1,11 +1,15 @@
-const { CreateOrder, GetOrders, GetOrder, UpdateOrder, DeleteOrder } = require("../controller/OrdersController");
+const {
+  CreateOrder,
+  GetOrders,
+  GetOrder,
+  UpdateOrder,
+  DeleteOrder,
+} = require("../controller/OrdersController");
 const auth = require("../middlewares/auth");
 const { errorHandler } = require("../utils/errorHandler");
 
-
 function OrdersRoute(fastify, options, done) {
   fastify.post("/create", {
-    preHandler: [auth(["client"])],
     schema: {
       tags: ["Order"],
       body: {
@@ -28,7 +32,7 @@ function OrdersRoute(fastify, options, done) {
   });
 
   fastify.get("/all", {
-    preHandler: [auth(["admin"])],
+    preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Order"],
       headers: {
@@ -39,10 +43,10 @@ function OrdersRoute(fastify, options, done) {
       },
     },
     handler: errorHandler(GetOrders),
-  })
+  });
 
   fastify.get("/one/:id", {
-    preHandler: [auth(["admin"])],
+    preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Order"],
       headers: {
@@ -53,10 +57,10 @@ function OrdersRoute(fastify, options, done) {
       },
     },
     handler: errorHandler(GetOrder),
-  })
+  });
 
   fastify.put("/update/:id", {
-    preHandler: [auth(["admin"])],
+    preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Order"],
       headers: {
@@ -67,7 +71,7 @@ function OrdersRoute(fastify, options, done) {
       },
     },
     handler: errorHandler(UpdateOrder),
-  })
+  });
 
   fastify.delete("/delete/:id", {
     preHandler: [auth(["Admin"])],
@@ -81,9 +85,9 @@ function OrdersRoute(fastify, options, done) {
       },
     },
     handler: errorHandler(DeleteOrder),
-  })
+  });
 
-  done()
+  done();
 }
 
 module.exports = OrdersRoute;

@@ -9,8 +9,8 @@ const OrderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  client_id: {
-    type: String,
+  table_number: {
+    type: Number,
     required: true,
   },
   status: {
