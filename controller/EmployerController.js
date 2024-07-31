@@ -1,4 +1,5 @@
 const Employer = require("../model/EmployerModel");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.employerRegister = async (req, res) => {
