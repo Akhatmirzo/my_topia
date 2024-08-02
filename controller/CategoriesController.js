@@ -110,7 +110,6 @@ exports.categoryUpdate = async (req, res) => {
   return res.status(200).send({
     success: true,
     message: "Category was successfully updated",
-    category,
   });
 };
 
