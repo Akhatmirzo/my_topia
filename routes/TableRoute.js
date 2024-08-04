@@ -5,6 +5,7 @@ const {
   updateTable,
   deleteTable,
 } = require("../controller/TableController");
+const auth = require("../middlewares/auth");
 const { errorHandler } = require("../utils/errorHandler");
 
 function TableRoute(fastify, options, done) {
@@ -57,6 +58,8 @@ function TableRoute(fastify, options, done) {
       tags: ["Table"],
     },
     handler: errorHandler(deleteTable),
-  })
+  });
   done();
 }
+
+module.exports = TableRoute;

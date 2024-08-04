@@ -80,6 +80,14 @@ fastify.register(require("./routes/OrdersRoute"), {
   prefix: "/api/orders",
 });
 
+fastify.register(require("./routes/TableRoute"), {
+  prefix: "/api/table",
+});
+
+fastify.register(require("./routes/WareHouseProductsRoute"), {
+  prefix: "/api/warehouse",
+});
+
 fastify.ready((err) => {
   if (err) throw err;
 
