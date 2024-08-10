@@ -24,6 +24,7 @@ function TableRoute(fastify, options, done) {
     },
     handler: errorHandler(create),
   });
+
   fastify.get("/all", {
     preHandler: [auth(["admin", "employer"])],
     schema: {
@@ -31,6 +32,7 @@ function TableRoute(fastify, options, done) {
     },
     handler: errorHandler(getTables),
   });
+
   fastify.get("/one/:id", {
     preHandler: [auth(["admin", "employer"])],
     schema: {
@@ -38,6 +40,7 @@ function TableRoute(fastify, options, done) {
     },
     handler: errorHandler(getTableById),
   });
+
   fastify.put("/update/:id", {
     preHandler: [auth(["admin", "employer"])],
     schema: {
@@ -52,6 +55,7 @@ function TableRoute(fastify, options, done) {
     },
     handler: errorHandler(updateTable),
   });
+  
   fastify.delete("/delete/:id", {
     preHandler: [auth(["admin"])],
     schema: {
