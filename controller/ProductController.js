@@ -41,8 +41,7 @@ exports.CreateProduct = async (req, res) => {
 
 
 exports.GetProducts = async (req, res) => {
-  const { page = 1, pageSize = 10, category } = req.query;
-  const skip = (page - 1) * pageSize;
+  const { category } = req.query;
 
   let products = null;
 
@@ -60,8 +59,6 @@ exports.GetProducts = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .skip(skip)
-      .limit(pageSize);
   } else {
     products = await Products.find({
       ...findingProduct,
@@ -70,8 +67,6 @@ exports.GetProducts = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .skip(skip)
-      .limit(pageSize);
   }
 
   if (!products || products.length === 0) {
@@ -84,9 +79,6 @@ exports.GetProducts = async (req, res) => {
   return res.status(200).send({
     success: true,
     products,
-    page,
-    pageSize,
-    count: products.length,
   });
 };
 
@@ -201,9 +193,7 @@ exports.DeleteProduct = async (req, res) => {
 
 // Products Pagination
 exports.GetProductsWebPage = async (req, res) => {
-  const { page = 1, pageSize = 10, category = "" } = req.query;
-
-  const skip = (page - 1) * pageSize;
+  const { category = "" } = req.query;
 
   let findingProduct = {
     deleted: false,
@@ -220,8 +210,6 @@ exports.GetProductsWebPage = async (req, res) => {
     .sort({
       createdAt: -1,
     })
-    .skip(skip)
-    .limit(pageSize);
 
   if (!products || products.length === 0) {
     return res.status(404).send({
@@ -233,9 +221,6 @@ exports.GetProductsWebPage = async (req, res) => {
   return res.status(200).send({
     success: true,
     products,
-    page,
-    pageSize,
-    count: products.length,
   });
 };
 
