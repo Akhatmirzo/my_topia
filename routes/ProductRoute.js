@@ -41,7 +41,7 @@ function ProductRoute(fastify, options, done) {
     handler: errorHandler(CreateProduct),
   });
 
-  fastify.get("/pagination", {
+  fastify.get("/all", {
     preHandler: [auth(["admin", "employer"])],
     schema: {
       tags: ["Product"],
@@ -54,14 +54,6 @@ function ProductRoute(fastify, options, done) {
       query: {
         type: "object",
         properties: {
-          page: {
-            type: "number",
-            default: 1,
-          },
-          pageSize: {
-            type: "number",
-            default: 10,
-          },
           category: {
             type: "string",
             default: "",

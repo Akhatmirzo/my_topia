@@ -3,20 +3,12 @@ const { errorHandler } = require("../utils/errorHandler");
 
 function WebPageRoute(fastify, options, done) {
   // Get All Products for Products sales Page
-  fastify.get("/products/pagination", {
+  fastify.get("/products/all", {
     schema: {
       tags: ["WebPage"],
       query: {
         type: "object",
         properties: {
-          page: {
-            type: "number",
-            default: 1,
-          },
-          pageSize: {
-            type: "number",
-            default: 10,
-          },
           category: {
             type: "string",
             default: "",
