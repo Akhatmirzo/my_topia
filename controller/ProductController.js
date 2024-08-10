@@ -2,13 +2,13 @@ const Products = require("../model/ProductsModel");
 const fs = require("fs");
 
 exports.CreateProduct = async (req, res) => {
-  const { name, description, price, category_id, characteristics } = {
+  const { name, price, category_id, characteristics } = {
     ...req.body,
   };
 
   const images = req.files;
 
-  if (!name || !description || !price || !category_id) {
+  if (!name || !price || !category_id) {
     return res.status(400).send({
       success: false,
       message: "Data are required",
@@ -23,7 +23,6 @@ exports.CreateProduct = async (req, res) => {
 
   const newProduct = new Products({
     name,
-    description,
     price,
     category_id,
     characteristics,
@@ -51,6 +50,7 @@ exports.GetProducts = async (req, res) => {
     findingProduct = {
       ...findingProduct,
       category_id: category,
+      deleted: false,
     };
   }
 
