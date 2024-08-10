@@ -53,7 +53,7 @@ fastify.get("/start", { schema: { tags: ["API"] } }, (req, res) => {
 });
 
 fastify.get("/", (req, res) => {
-  res.sendFile("./index.html");
+  res.send("Welcome to the API");
 });
 
 fastify.register(require("./routes/AdminRoute"), {
