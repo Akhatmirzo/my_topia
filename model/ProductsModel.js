@@ -7,7 +7,16 @@ const ProductSchema = mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true,
+  },
+  options: {
+    type: Array,
+    // items: {
+    //   type: Object,
+    //   properties: {
+    //     name: { type: String },
+    //     price: { type: Number },
+    //   },
+    // },
   },
   images: {
     type: Array,
@@ -19,7 +28,7 @@ const ProductSchema = mongoose.Schema({
   },
   characteristics: {
     type: Array,
-    // required: true,
+    default: [],
   },
   addition: {
     type: Array,

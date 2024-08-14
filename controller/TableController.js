@@ -75,7 +75,6 @@ exports.deleteTable = async (req, res) => {
 
 exports.updateTable = async (req, res) => {
   const { id } = req.params;
-  const { empty } = req.body;
 
   if (!id) {
     return res.status(400).send({
@@ -90,7 +89,7 @@ exports.updateTable = async (req, res) => {
     },
     {
       $set: {
-        empty,
+        ...req.body,
       },
     }
   );

@@ -5,6 +5,11 @@ const TableSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  order: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order",
+    default: null,
+  },
   empty: {
     type: Boolean,
     default: true,
