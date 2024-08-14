@@ -2,7 +2,7 @@ const Products = require("../model/ProductsModel");
 const fs = require("fs");
 
 exports.CreateProduct = async (req, res) => {
-  const { name, price, category_id, characteristics } = {
+  const { name, price, category_id, characteristics, addition } = {
     ...req.body,
   };
 
@@ -27,6 +27,7 @@ exports.CreateProduct = async (req, res) => {
     category_id,
     characteristics,
     images,
+    addition
   });
 
   await newProduct.save();
@@ -37,7 +38,6 @@ exports.CreateProduct = async (req, res) => {
     data: newProduct,
   });
 };
-
 
 exports.GetProducts = async (req, res) => {
   const { category } = req.query;
