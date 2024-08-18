@@ -57,7 +57,7 @@ exports.GetProducts = async (req, res) => {
   if (req.role === "admin") {
     products = await Products.find(findingProduct)
       .sort({
-        createdAt: -1,
+        created_at: -1,
       })
   } else {
     products = await Products.find({
@@ -65,7 +65,7 @@ exports.GetProducts = async (req, res) => {
       deleted: false,
     })
       .sort({
-        createdAt: -1,
+        created_at: -1,
       })
   }
 

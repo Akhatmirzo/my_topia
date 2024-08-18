@@ -31,26 +31,25 @@ exports.CreateOrder = async (req, res) => {
 
 exports.GetOrders = async (req, res) => {
   let handler = {};
-
-  const now = new Date();
   
-  const today = new Date();
-  const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Kunning boshini olish
-  const todayEnd = new Date(today.setHours(23, 59, 59, 999));
+  // const today = new Date();
+  // const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Kunning boshini olish
+  // const todayEnd = new Date(today.setHours(23, 59, 59, 999));
 
   console.log(todayStart, todayEnd);
-  
 
   if (req.role === "admin") {
     handler = {
-      created_at: {
-        $gte: todayStart,
-        $lte: todayEnd,
-      },
+      // created_at: {
+      //   $gte: todayStart,
+      //   $lte: todayEnd,
+      // },
     };
   }
 
-  const orders = await Order.find(handler).populate("products.product_id");
+  const orders = await Order.find(handler).populate("products.product_id").sort({
+    created_at: -1,
+  });
 
   if (!orders || orders.length === 0) {
     return res.status(400).send({
