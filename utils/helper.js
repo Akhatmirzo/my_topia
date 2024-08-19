@@ -1,13 +1,25 @@
 const os = require("os");
 
 function totalPriceForProducts(products) {
-  const total_price = products.reduce((acc, { options, price, quantity }) => {
-    if (options) {
-      return acc + options.price * quantity;
-    } else {
-      return acc + price * quantity;
-    }
-  }, 0);
+  const total_price = products.reduce(
+    (acc, { options, price, quantity, additions }) => {
+      let addditionsPrices = 0;
+
+      if (additions?.length > 0) {
+        additions.forEach((addition) => {
+          addditionsPrices += Number(addition.price);
+        });
+      }
+
+      if (options) {
+        const amount = acc + options.price + addditionsPrices * quantity;
+        return amount;
+      } else {
+        return acc + price + addditionsPrices * quantity;
+      }
+    },
+    0
+  );
 
   return total_price;
 }
