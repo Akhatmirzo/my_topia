@@ -1,37 +1,34 @@
 const mongoose = require("mongoose");
 
-const OrderSchema = new mongoose.Schema({
-  products: [
-    {
-      product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-      quantity: { type: Number },
-      price: { type: Number },
-      options: { type: Object },
-      additions: { type: Array },
+const OrderSchema = new mongoose.Schema(
+  {
+    products: [
+      {
+        product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: { type: Number },
+        price: { type: Number },
+        options: { type: Object },
+        additions: { type: Array },
+      },
+    ],
+    total_price: {
+      type: Number,
+      required: true,
     },
-  ],
-  total_price: {
-    type: Number,
-    required: true,
+    table_number: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "paid", "preparing", "ready", "completed", "cancelled"],
+    },
   },
-  table_number: {
-    type: Number,
-    required: true,
-  },
-  status: {
-    type: String,
-    default: "pending",
-    enum: ["pending", "paid", "preparing", "ready", "completed", "cancelled"],
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const Order = mongoose.model("Order", OrderSchema);
 
