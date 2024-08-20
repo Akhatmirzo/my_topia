@@ -19,8 +19,8 @@ exports.CreateOrder = async (req, res) => {
   const order = new Order({
     ...body,
     total_price,
-    createdAt: new Date(localTime),
-    updatedAt: new Date(localTime),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   });
 
   // Client Order save
