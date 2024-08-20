@@ -4,13 +4,20 @@ const fs = require("fs");
 exports.CreateProduct = async (req, res) => {
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
-  const { name, price, category_id, characteristics, addition } = {
+  const { name, price, category_id, characteristics, addition, options } = {
     ...req.body,
   };
 
   const images = req.files;
 
-  if (!name || !price || !category_id) {
+  if (
+    !name ||
+    !price ||
+    !category_id ||
+    !characteristics ||
+    !addition ||
+    !options
+  ) {
     return res.status(400).send({
       success: false,
       message: "Data are required",
@@ -23,16 +30,13 @@ exports.CreateProduct = async (req, res) => {
       message: "Images are required",
     });
 
-  const newProduct = new Products({
-    name,
-    price,
-    category_id,
-    characteristics,
-    images,
-    addition,
+  const productObj = {
+    ...req.body,
     createdAt: gmtPlus5Date,
     updatedAt: gmtPlus5Date,
-  });
+  };
+
+  const newProduct = new Products(productObj);
 
   await newProduct.save();
 
@@ -59,18 +63,16 @@ exports.GetProducts = async (req, res) => {
   }
 
   if (req.role === "admin") {
-    products = await Products.find(findingProduct)
-      .sort({
-        created_at: -1,
-      })
+    products = await Products.find(findingProduct).sort({
+      created_at: -1,
+    });
   } else {
     products = await Products.find({
       ...findingProduct,
       deleted: false,
-    })
-      .sort({
-        createdAt: -1,
-      })
+    }).sort({
+      createdAt: -1,
+    });
   }
 
   if (!products || products.length === 0) {
@@ -113,7 +115,7 @@ exports.UpdateProduct = async (req, res) => {
 
   const updateProduct = {
     ...req.body,
-    updatedAt: gmtPlus5Date
+    updatedAt: gmtPlus5Date,
   };
 
   if (newImages.length > 0) {
@@ -172,7 +174,7 @@ exports.DeleteProduct = async (req, res) => {
   const { id } = req.params;
 
   const product = await Products.findOneAndDelete({
-    _id: id
+    _id: id,
   });
 
   if (!product) {
@@ -196,7 +198,6 @@ exports.DeleteProduct = async (req, res) => {
   });
 };
 
-
 // Products Pagination
 exports.GetProductsWebPage = async (req, res) => {
   const { category = "" } = req.query;
@@ -212,10 +213,9 @@ exports.GetProductsWebPage = async (req, res) => {
     };
   }
 
-  const products = await Products.find(findingProduct)
-    .sort({
-      createdAt: -1,
-    })
+  const products = await Products.find(findingProduct).sort({
+    createdAt: -1,
+  });
 
   if (!products || products.length === 0) {
     return res.status(404).send({
