@@ -4,20 +4,13 @@ const fs = require("fs");
 exports.CreateProduct = async (req, res) => {
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
-  const { name, price, category_id, characteristics, addition, options } = {
+  const { name, price, category_id } = {
     ...req.body,
   };
 
   const images = req.files;
 
-  if (
-    !name ||
-    !price ||
-    !category_id ||
-    !characteristics ||
-    !addition ||
-    !options
-  ) {
+  if (!name || !price || !category_id) {
     return res.status(400).send({
       success: false,
       message: "Data are required",
