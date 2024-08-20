@@ -25,6 +25,7 @@ exports.CreateProduct = async (req, res) => {
 
   const productObj = {
     ...req.body,
+    images,
     createdAt: gmtPlus5Date,
     updatedAt: gmtPlus5Date,
   };
