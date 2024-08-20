@@ -2,6 +2,8 @@ const Categories = require("../model/CategoriesModel");
 const fs = require("fs");
 
 exports.categoriesCreate = async (req, res) => {
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { name } = { ...req.body };
   const image = req.files;
 
@@ -21,6 +23,8 @@ exports.categoriesCreate = async (req, res) => {
   const category = new Categories({
     name,
     image: image[0],
+    createdAt: gmtPlus5Date,
+    updatedAt: gmtPlus5Date
   });
 
   await category.save();
@@ -66,6 +70,8 @@ exports.category = async (req, res) => {
 };
 
 exports.categoryUpdate = async (req, res) => {
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
   const { name } = { ...req.body };
   const image = req.files;
@@ -79,6 +85,7 @@ exports.categoryUpdate = async (req, res) => {
 
   const optionsUpdate = {
     name,
+    updatedAt: gmtPlus5Date,
   };
 
   if (image.length > 0) {

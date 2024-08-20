@@ -1,9 +1,9 @@
 const Products = require("../model/ProductsModel");
 const fs = require("fs");
-const moment = require('moment-timezone');
 
 exports.CreateProduct = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { name, price, category_id, characteristics, addition } = {
     ...req.body,
   };
@@ -30,8 +30,8 @@ exports.CreateProduct = async (req, res) => {
     characteristics,
     images,
     addition,
-    createdAt: new Date(localTime),
-    updatedAt: new Date(localTime),
+    createdAt: gmtPlus5Date,
+    updatedAt: gmtPlus5Date,
   });
 
   await newProduct.save();
@@ -105,14 +105,15 @@ exports.GetProduct = async (req, res) => {
 };
 
 exports.UpdateProduct = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
 
   const newImages = req.files;
 
   const updateProduct = {
     ...req.body,
-    updatedAt: new Date(localTime)
+    updatedAt: gmtPlus5Date
   };
 
   if (newImages.length > 0) {

@@ -1,10 +1,8 @@
 const Order = require("../model/OrderModel");
 const Products = require("../model/ProductsModel");
 const { totalPriceForProducts } = require("../utils/helper");
-const moment = require("moment-timezone");
 
 exports.CreateOrder = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const body = req.body;
@@ -95,7 +93,8 @@ exports.GetOrder = async (req, res) => {
 };
 
 exports.UpdateOrder = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
 
   const { products } = req.body;
@@ -112,7 +111,7 @@ exports.UpdateOrder = async (req, res) => {
     {
       $set: {
         products,
-        updatedAt: new Date(localTime),
+        updatedAt: gmtPlus5Date,
       },
     }
   );
