@@ -3,9 +3,8 @@ const Products = require("../model/ProductsModel");
 const { totalPriceForProducts } = require("../utils/helper");
 const moment = require('moment-timezone');
 
-const localTime = moment().tz("Asia/Tashkent").format();
-
 exports.CreateOrder = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const body = req.body;
 
   if (!body.products || body.products.length === 0) {
@@ -94,6 +93,7 @@ exports.GetOrder = async (req, res) => {
 };
 
 exports.UpdateOrder = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { id } = req.params;
 
   const { products } = req.body;

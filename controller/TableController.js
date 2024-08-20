@@ -1,9 +1,8 @@
 const Table = require("../model/TableModel");
 const moment = require('moment-timezone');
 
-const localTime = moment().tz("Asia/Tashkent").format();
-
 exports.create = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { table_number } = req.body;
 
   if (!table_number) {
@@ -81,6 +80,7 @@ exports.deleteTable = async (req, res) => {
 };
 
 exports.updateTable = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { id } = req.params;
 
   if (!id) {

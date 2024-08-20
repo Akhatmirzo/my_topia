@@ -1,9 +1,9 @@
 const Products = require("../model/ProductsModel");
 const fs = require("fs");
 const moment = require('moment-timezone');
-const localTime = moment().tz("Asia/Tashkent").format();
 
 exports.CreateProduct = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { name, price, category_id, characteristics, addition } = {
     ...req.body,
   };
@@ -105,6 +105,7 @@ exports.GetProduct = async (req, res) => {
 };
 
 exports.UpdateProduct = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { id } = req.params;
 
   const newImages = req.files;
