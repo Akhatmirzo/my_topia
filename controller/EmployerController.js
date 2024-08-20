@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.employerRegister = async (req, res) => {
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { phoneNumber, fullname, password } = req.body;
 
   if (!phoneNumber || !fullname || !password) {
@@ -27,6 +29,8 @@ exports.employerRegister = async (req, res) => {
     phoneNumber,
     fullname,
     password: hashedPassword,
+    createdAt: gmtPlus5Date,
+    updatedAt: gmtPlus5Date,
   });
 
   await employer.save();
@@ -129,6 +133,8 @@ exports.employerGetOne = async (req, res) => {
 };
 
 exports.employerUpdate = async (req, res) => {
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
   const { fullname, phoneNumber } = req.body;
 
@@ -141,6 +147,7 @@ exports.employerUpdate = async (req, res) => {
 
   const editEmployer = {
     fullname,
+    updatedAt: gmtPlus5Date,
   }
 
   if (phoneNumber) {

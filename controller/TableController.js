@@ -1,8 +1,8 @@
 const Table = require("../model/TableModel");
-const moment = require('moment-timezone');
 
 exports.create = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { table_number } = req.body;
 
   if (!table_number) {
@@ -14,8 +14,8 @@ exports.create = async (req, res) => {
 
   const table = await Table({
     table_number,
-    createdAt: new Date(localTime),
-    updatedAt: new Date(localTime),
+    createdAt: gmtPlus5Date,
+    updatedAt: gmtPlus5Date,
   });
 
   await table.save();
@@ -80,7 +80,8 @@ exports.deleteTable = async (req, res) => {
 };
 
 exports.updateTable = async (req, res) => {
-  const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
 
   if (!id) {
@@ -97,7 +98,7 @@ exports.updateTable = async (req, res) => {
     {
       $set: {
         ...req.body,
-        updatedAt: new Date(localTime),
+        updatedAt: gmtPlus5Date,
       },
     }
   );
