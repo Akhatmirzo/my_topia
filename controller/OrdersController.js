@@ -1,10 +1,12 @@
 const Order = require("../model/OrderModel");
 const Products = require("../model/ProductsModel");
 const { totalPriceForProducts } = require("../utils/helper");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 
 exports.CreateOrder = async (req, res) => {
   const localTime = moment().tz("Asia/Tashkent").format();
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const body = req.body;
 
   if (!body.products || body.products.length === 0) {
@@ -19,8 +21,8 @@ exports.CreateOrder = async (req, res) => {
   const order = new Order({
     ...body,
     total_price,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: gmtPlus5Date,
+    updatedAt: gmtPlus5Date,
   });
 
   // Client Order save
