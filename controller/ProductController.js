@@ -4,7 +4,7 @@ const fs = require("fs");
 exports.CreateProduct = async (req, res) => {
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
-  const { name, price, category_id } = {
+  const { name, category_id } = {
     ...req.body,
   };
 
