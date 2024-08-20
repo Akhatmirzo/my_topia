@@ -1,8 +1,8 @@
 const WareHouseProduct = require("../model/WareHouseProductsModel");
 const moment = require("moment-timezone");
-const localTime = moment().tz("Asia/Tashkent").format();
 
 exports.create = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { name, qty, unit } = req.body;
 
   if (!name || !qty || !unit) {
@@ -64,6 +64,7 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
+  const localTime = moment().tz("Asia/Tashkent").format();
   const { id } = req.params;
 
   const updatedProduct = await WareHouseProduct.findByIdAndUpdate(id, {
