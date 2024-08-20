@@ -1,5 +1,5 @@
 const WareHouseProduct = require("../model/WareHouseProductsModel");
-
+const moment = require("moment-timezone");
 const localTime = moment().tz("Asia/Tashkent").format();
 
 exports.create = async (req, res) => {

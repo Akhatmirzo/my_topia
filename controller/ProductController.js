@@ -1,6 +1,6 @@
 const Products = require("../model/ProductsModel");
 const fs = require("fs");
-
+const moment = require('moment-timezone');
 const localTime = moment().tz("Asia/Tashkent").format();
 
 exports.CreateProduct = async (req, res) => {
