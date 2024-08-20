@@ -10,7 +10,7 @@ exports.CreateProduct = async (req, res) => {
 
   const images = req.files;
 
-  if (!name || !price || !category_id) {
+  if (!name || !category_id) {
     return res.status(400).send({
       success: false,
       message: "Data are required",
