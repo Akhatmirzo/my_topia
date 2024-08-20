@@ -24,9 +24,12 @@ const OrderSchema = new mongoose.Schema(
       default: "pending",
       enum: ["pending", "paid", "preparing", "ready", "completed", "cancelled"],
     },
-  },
-  {
-    timestamps: true,
+    createdAt: {
+      type: Date,
+    },
+    updatedAt: {
+      type: Date,
+    },
   }
 );
 

@@ -2,6 +2,8 @@ const Order = require("../model/OrderModel");
 const Products = require("../model/ProductsModel");
 const { totalPriceForProducts } = require("../utils/helper");
 
+const localTime = moment().tz("Asia/Tashkent").format();
+
 exports.CreateOrder = async (req, res) => {
   const body = req.body;
 
@@ -17,6 +19,8 @@ exports.CreateOrder = async (req, res) => {
   const order = new Order({
     ...body,
     total_price,
+    createdAt: new Date(localTime),
+    updatedAt: new Date(localTime),
   });
 
   // Client Order save
@@ -31,7 +35,7 @@ exports.CreateOrder = async (req, res) => {
 
 exports.GetOrders = async (req, res) => {
   let handler = {};
-  
+
   // const today = new Date();
   // const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Kunning boshini olish
   // const todayEnd = new Date(today.setHours(23, 59, 59, 999));
@@ -47,9 +51,11 @@ exports.GetOrders = async (req, res) => {
     };
   }
 
-  const orders = await Order.find(handler).populate("products.product_id").sort({
-    created_at: -1,
-  });
+  const orders = await Order.find(handler)
+    .populate("products.product_id")
+    .sort({
+      created_at: -1,
+    });
 
   if (!orders || orders.length === 0) {
     return res.status(400).send({
@@ -103,6 +109,7 @@ exports.UpdateOrder = async (req, res) => {
     {
       $set: {
         products,
+        updatedAt: new Date(localTime),
       },
     }
   );

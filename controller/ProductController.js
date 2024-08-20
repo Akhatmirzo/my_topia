@@ -1,6 +1,8 @@
 const Products = require("../model/ProductsModel");
 const fs = require("fs");
 
+const localTime = moment().tz("Asia/Tashkent").format();
+
 exports.CreateProduct = async (req, res) => {
   const { name, price, category_id, characteristics, addition } = {
     ...req.body,
@@ -27,7 +29,9 @@ exports.CreateProduct = async (req, res) => {
     category_id,
     characteristics,
     images,
-    addition
+    addition,
+    createdAt: new Date(localTime),
+    updatedAt: new Date(localTime),
   });
 
   await newProduct.save();
@@ -65,7 +69,7 @@ exports.GetProducts = async (req, res) => {
       deleted: false,
     })
       .sort({
-        created_at: -1,
+        createdAt: -1,
       })
   }
 
@@ -107,7 +111,7 @@ exports.UpdateProduct = async (req, res) => {
 
   const updateProduct = {
     ...req.body,
-    updatedAt: Date.now(),
+    updatedAt: new Date(localTime)
   };
 
   if (newImages.length > 0) {

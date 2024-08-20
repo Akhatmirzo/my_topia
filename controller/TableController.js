@@ -1,5 +1,7 @@
 const Table = require("../model/TableModel");
 
+const localTime = moment().tz("Asia/Tashkent").format();
+
 exports.create = async (req, res) => {
   const { table_number } = req.body;
 
@@ -10,7 +12,11 @@ exports.create = async (req, res) => {
     });
   }
 
-  const table = await Table({ table_number });
+  const table = await Table({
+    table_number,
+    createdAt: new Date(localTime),
+    updatedAt: new Date(localTime),
+  });
 
   await table.save();
 
@@ -39,7 +45,7 @@ exports.getTables = async (req, res) => {
 
 exports.getTableById = async (req, res) => {
   const { id } = req.params;
-  
+
   const table = await Table.findById(id);
 
   if (!table) {
@@ -90,6 +96,7 @@ exports.updateTable = async (req, res) => {
     {
       $set: {
         ...req.body,
+        updatedAt: new Date(localTime),
       },
     }
   );

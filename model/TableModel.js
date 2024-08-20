@@ -14,6 +14,12 @@ const TableSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  createdAt: {
+    type: Date,
+  },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 const Table = mongoose.model("Table", TableSchema);
