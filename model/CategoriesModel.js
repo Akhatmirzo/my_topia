@@ -9,6 +9,12 @@ const CategoriesSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  createdAt: {
+    type: Date,
+  },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 const Categories = mongoose.model("Categories", CategoriesSchema);

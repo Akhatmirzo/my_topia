@@ -1,5 +1,7 @@
 const WareHouseProduct = require("../model/WareHouseProductsModel");
 
+const localTime = moment().tz("Asia/Tashkent").format();
+
 exports.create = async (req, res) => {
   const { name, qty, unit } = req.body;
 
@@ -14,6 +16,8 @@ exports.create = async (req, res) => {
     name,
     qty,
     unit,
+    createdAt: new Date(localTime),
+    updatedAt: new Date(localTime),
   });
 
   await Product.save();
@@ -65,6 +69,7 @@ exports.updateProduct = async (req, res) => {
   const updatedProduct = await WareHouseProduct.findByIdAndUpdate(id, {
     $set: {
       ...req.body,
+      updatedAt: new Date(localTime),
     },
   });
 

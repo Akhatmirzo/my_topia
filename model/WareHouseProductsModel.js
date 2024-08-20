@@ -15,6 +15,12 @@ const WareHouseProductsSchema = mongoose.Schema({
     enum: ["kg", "dona", "qadoq", "litr"],
     required: true,
   },
+  createdAt: {
+    type: Date,
+  },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 const WareHouseProduct = mongoose.model(
