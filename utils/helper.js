@@ -12,10 +12,11 @@ function totalPriceForProducts(products) {
       }
 
       if (options) {
-        const amount = acc + options.price + addditionsPrices * quantity;
+        const amount =
+          acc + Number(options.price) + addditionsPrices * quantity;
         return amount;
       } else {
-        return acc + price + addditionsPrices * quantity;
+        return acc + Number(price) + addditionsPrices * quantity;
       }
     },
     0
