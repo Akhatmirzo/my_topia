@@ -37,7 +37,12 @@ exports.CreateOrder = async (req, res) => {
     // Client Order save
     await order.save();
 
-    const orderIds = [...table.order];
+    
+    let orderIds = [];
+    if (table.order) {
+      console.log(table.order);
+      orderIds = [...table.order];
+    }
 
     orderIds.push(order._id);
 
@@ -59,7 +64,6 @@ exports.CreateOrder = async (req, res) => {
       order,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({
       success: false,
       message: "Error creating order" + error.message,
