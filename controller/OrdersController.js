@@ -1,5 +1,6 @@
 const Order = require("../model/OrderModel");
 const Products = require("../model/ProductsModel");
+const Table = require("../model/TableModel");
 const { totalPriceForProducts } = require("../utils/helper");
 
 exports.CreateOrder = async (req, res) => {
@@ -14,47 +15,81 @@ exports.CreateOrder = async (req, res) => {
     });
   }
 
-  const total_price = totalPriceForProducts(body.products);
+  try {
+    const table = await Table.findOne({ table_number: body.table_number });
 
-  const order = new Order({
-    ...body,
-    total_price,
-    createdAt: gmtPlus5Date,
-    updatedAt: gmtPlus5Date,
-  });
+    if (!table) {
+      return res.status(404).send({
+        success: false,
+        message: "Table not found",
+      });
+    }
 
-  // Client Order save
-  await order.save();
+    const total_price = totalPriceForProducts(body.products);
 
-  return res.status(201).send({
-    success: true,
-    message: "Order created successfully",
-    order,
-  });
+    const order = new Order({
+      ...body,
+      total_price,
+      createdAt: gmtPlus5Date,
+      updatedAt: gmtPlus5Date,
+    });
+
+    // Client Order save
+    await order.save();
+
+    const orderIds = [...table.order];
+
+    orderIds.push(order._id);
+
+    // Update table status
+    await Table.findOneAndUpdate(
+      { table_number: body.table_number },
+      {
+        $set: {
+          empty: false,
+          order: orderIds,
+          updatedAt: gmtPlus5Date,
+        },
+      }
+    );
+
+    return res.status(201).send({
+      success: true,
+      message: "Order created successfully",
+      order,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({
+      success: false,
+      message: "Error creating order",
+    });
+  }
 };
 
 exports.GetOrders = async (req, res) => {
   let handler = {};
 
-  // const today = new Date();
-  // const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Kunning boshini olish
-  // const todayEnd = new Date(today.setHours(23, 59, 59, 999));
+  const today = new Date();
+  const gmtPlus5Date = new Date(today.getTime() + 5 * 60 * 60 * 1000);
+  const todayStart = new Date(gmtPlus5Date.setHours(0, 0, 0, 0)); // Kunning boshini olish
+  const todayEnd = new Date(gmtPlus5Date.setHours(23, 59, 59, 999));
 
   console.log(todayStart, todayEnd);
 
-  if (req.role === "admin") {
+  if (req.role === "employer") {
     handler = {
-      // created_at: {
-      //   $gte: todayStart,
-      //   $lte: todayEnd,
-      // },
+      createdAt: {
+        $gte: todayStart,
+        $lte: todayEnd,
+      },
     };
   }
 
   const orders = await Order.find(handler)
     .populate("products.product_id")
     .sort({
-      created_at: -1,
+      createdAt: -1,
     });
 
   if (!orders || orders.length === 0) {
@@ -97,12 +132,10 @@ exports.UpdateOrder = async (req, res) => {
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
 
-  const { products } = req.body;
-
-  if (!products || !id) {
+  if (!id) {
     return res.status(400).send({
       success: false,
-      message: "products and id is required",
+      message: "id is required",
     });
   }
 
@@ -110,7 +143,7 @@ exports.UpdateOrder = async (req, res) => {
     { _id: id },
     {
       $set: {
-        products,
+        status: req.body.status,
         updatedAt: gmtPlus5Date,
       },
     }
@@ -121,6 +154,27 @@ exports.UpdateOrder = async (req, res) => {
       success: false,
       message: "Order was not found",
     });
+  }
+
+  if (order.status === "paid") {
+    const table = await Table.findOne({ table_number: order.table_number });
+
+    const editTableOrders = table.order.filter(
+      (tableOrder) => tableOrder !== order._id
+    );
+
+    const updateTableObj = {
+      empty: editTableOrders.length === 0,
+      order: [...editTableOrders],
+      updatedAt: gmtPlus5Date,
+    };
+
+    await Table.findOneAndUpdate(
+      { table_number: order.table_number },
+      {
+        $set: updateTableObj,
+      }
+    );
   }
 
   return order.status(200).send({
