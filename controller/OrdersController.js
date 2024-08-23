@@ -62,7 +62,7 @@ exports.CreateOrder = async (req, res) => {
     console.error(error);
     return res.status(500).send({
       success: false,
-      message: "Error creating order",
+      message: "Error creating order" + error.message,
     });
   }
 };
