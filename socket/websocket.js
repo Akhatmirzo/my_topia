@@ -14,11 +14,7 @@ const io = webSocket(server, {
 const getReceiverSocketId = ({ role, receiverId }) => {
   if (receiverId) return userSocketMap[receiverId];
   else if (role === "employer") {
-    let socketData = [];
-    for (const element of employerSocketMap) {
-      socketData.push(element);
-    }
-    return socketData;
+    return employerSocketMap;
   }
 };
 
