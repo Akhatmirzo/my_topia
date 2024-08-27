@@ -74,7 +74,7 @@ function OrdersRoute(fastify, options, done) {
   });
 
   fastify.delete("/delete/:id", {
-    preHandler: [auth(["Admin"])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Order"],
       headers: {

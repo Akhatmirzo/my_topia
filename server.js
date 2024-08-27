@@ -1,27 +1,17 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const { default: mongoose } = require("mongoose");
-const fastify = require("fastify")();
-const fastifyIO = require("fastify-socket.io");
-const requestIp = require("request-ip");
 const cors = require("@fastify/cors");
+const { fastify } = require("./socket/websocket")
 
 //? Multer setup
 const multer = require("fastify-multer");
 fastify.register(multer.contentParser);
 const path = require("path");
-const { getLocalIPAddress } = require("./utils/helper");
 
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "/uploads"),
   prefix: "/uploads/", // optional: default '/'
-});
-
-fastify.register(fastifyIO, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
 });
 
 fastify.register(cors, {
@@ -86,19 +76,6 @@ fastify.register(require("./routes/TableRoute"), {
 
 fastify.register(require("./routes/WareHouseProductsRoute"), {
   prefix: "/api/warehouse",
-});
-
-fastify.ready((err) => {
-  if (err) throw err;
-
-  fastify.io.on("connection", (socket) => {
-    console.log("A user connected", socket.id);
-
-    // Ulanishni uzish
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
-    });
-  });
 });
 
 //? Connection to the database

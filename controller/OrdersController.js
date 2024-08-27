@@ -1,6 +1,6 @@
 const Order = require("../model/OrderModel");
-const Products = require("../model/ProductsModel");
 const Table = require("../model/TableModel");
+const { getReceiverSocketId } = require("../socket/websocket");
 const { totalPriceForProducts } = require("../utils/helper");
 
 exports.CreateOrder = async (req, res) => {
@@ -37,7 +37,6 @@ exports.CreateOrder = async (req, res) => {
     // Client Order save
     await order.save();
 
-    
     let orderIds = [];
     if (table.order) {
       console.log(table.order);
@@ -57,6 +56,14 @@ exports.CreateOrder = async (req, res) => {
         },
       }
     );
+
+    const receiverIds = getReceiverSocketId({ role: "employer" });
+
+    if (receiverIds.length > 0) {
+      receiverIds.forEach((receiverId) => {
+        io.to(receiverId).emit("newOrder", { orderId: order._id });
+      });
+    }
 
     return res.status(201).send({
       success: true,
@@ -199,7 +206,6 @@ exports.DeleteOrder = async (req, res) => {
 
   const order = await Order.findOneAndDelete({
     _id: id,
-    client_id: req.userId,
   });
 
   if (!order) {
