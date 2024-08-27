@@ -60,9 +60,11 @@ exports.CreateOrder = async (req, res) => {
     const receiverIds = getReceiverSocketId({ role: "employer" });
 
     if (receiverIds.length > 0) {
-      receiverIds.forEach((receiverId) => {
-        io.to(receiverId).emit("newOrder", { orderId: order._id });
-      });
+      console.log(receiverIds);
+
+      // receiverIds.forEach((receiverId) => {
+      //   io.to(receiverId).emit("newOrder", { orderId: order._id });
+      // });
     }
 
     return res.status(201).send({
