@@ -28,7 +28,13 @@ exports.create = async (req, res) => {
 };
 
 exports.getTables = async (req, res) => {
-  const tables = await Table.find();
+  const tables = await Table.find().populate({
+    path: "order", // order maydonini populate qilamiz
+    populate: {
+      path: "products.product_id", // order ichidagi product_id ni populate qilamiz
+      model: "Product", // Bu 'Product' modeliga murojaat
+    },
+  });
 
   if (!tables || tables.length === 0) {
     return res.status(404).send({
@@ -46,7 +52,7 @@ exports.getTables = async (req, res) => {
 exports.getTableById = async (req, res) => {
   const { id } = req.params;
 
-  const table = await Table.findById(id);
+  const table = await Table.findById(id).populate("order");
 
   if (!table) {
     return res.status(404).send({
