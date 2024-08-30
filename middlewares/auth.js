@@ -1,4 +1,5 @@
 const Admin = require("../model/AdminModel");
+const Employer = require("../model/EmployerModel");
 const jwt = require("jsonwebtoken");
 
 const auth = (permissions) => {
