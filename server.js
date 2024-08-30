@@ -77,6 +77,9 @@ fastify.register(require("./routes/TableRoute"), {
 fastify.register(require("./routes/WareHouseProductsRoute"), {
   prefix: "/api/warehouse",
 });
+fastify.register(require("./routes/StatisticsRoute"), {
+  prefix: "/api/statistics",
+});
 
 //? Connection to the database
 mongoose
