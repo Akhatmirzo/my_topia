@@ -4,6 +4,7 @@ const {
   getTableById,
   updateTable,
   deleteTable,
+  changeTableOrder,
 } = require("../controller/TableController");
 const auth = require("../middlewares/auth");
 const { errorHandler } = require("../utils/errorHandler");
@@ -55,7 +56,21 @@ function TableRoute(fastify, options, done) {
     },
     handler: errorHandler(updateTable),
   });
-  
+
+  fastify.put("/update/order/:table_id", {
+    preHandler: [auth(["employer"])],
+    schema: {
+      tags: ["Table"],
+      body: {
+        type: "object",
+        properties: {
+          status: { type: "string", enum: ["pending", "paid"] },
+        },
+      },
+    },
+    handler: errorHandler(changeTableOrder),
+  });
+
   fastify.delete("/delete/:id", {
     preHandler: [auth(["admin"])],
     schema: {

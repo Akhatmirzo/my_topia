@@ -1,6 +1,7 @@
 const webSocket = require("socket.io");
 const Admin = require("../model/AdminModel");
 const Employer = require("../model/EmployerModel");
+const jwt = require("jsonwebtoken")
 const fastify = require("fastify")();
 
 const server = fastify.server;
@@ -15,6 +16,8 @@ const getReceiverSocketId = ({ role, receiverId }) => {
   if (receiverId) return userSocketMap[receiverId];
   else if (role === "employer") {
     return employerSocketMap;
+  }else if (role === "admin") {
+    return adminSocketMap;
   }
 };
 
@@ -33,10 +36,14 @@ io.on("connection", async (socket) => {
     process.env.jwt_secret_key,
     async function (err, decoded) {
       if (err) {
+        console.log("Error verifying", socket.id);
         return;
       }
 
       const { phoneNumber, role } = decoded;
+
+      console.log(phoneNumber, role, socket.id);
+      
 
       if (role === "admin") {
         const user = await Admin.findOne({ phoneNumber }).exec();
@@ -57,6 +64,8 @@ io.on("connection", async (socket) => {
           if (userId != "undefined") employerSocketMap[userId] = socket.id;
         }
       }
+
+      console.log(employerSocketMap, adminSocketMap);
     }
   );
 

@@ -38,16 +38,17 @@ exports.getStatistics = async (req, res) => {
     };
   }
 
+  if (date) {
+    aggregateDateSchema = { $hour: "$createdAt" };
+  }
+
   const Statistics = await Order.aggregate([
     {
       $match: {
-        // status: "paid",
+        status: "paid",
         createdAt,
       },
     },
-    // {
-    // //   $unwind: "$products", // Har bir mahsulotni alohida hujjat sifatida ko'rsatadi
-    // },
     {
       $group: {
         _id: aggregateDateSchema, // createdAt maydonidan soatni oladi

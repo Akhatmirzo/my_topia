@@ -10,7 +10,7 @@ function StatisticsRoute(fastify, options, done) {
       query: {
         type: "object",
         properties: {
-          date: { type: "string", format: "date" },
+          date: { type: "string" },
           dateType: {
             type: "string",
             enum: ["day", "month", "year"],
