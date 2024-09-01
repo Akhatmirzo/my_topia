@@ -1,4 +1,6 @@
+const Order = require("../model/OrderModel");
 const Table = require("../model/TableModel");
+const { io, getReceiverSocketId } = require("../socket/websocket");
 
 exports.create = async (req, res) => {
   const currentDate = new Date();
@@ -35,13 +37,6 @@ exports.getTables = async (req, res) => {
       model: "Product", // Bu 'Product' modeliga murojaat
     },
   });
-
-  if (!tables || tables.length === 0) {
-    return res.status(404).send({
-      success: false,
-      message: "No tables found",
-    });
-  }
 
   return res.send({
     success: true,
@@ -119,6 +114,68 @@ exports.updateTable = async (req, res) => {
   return res.send({
     success: true,
     message: "Table updated successfully",
+    table,
+  });
+};
+
+exports.changeTableOrder = async (req, res) => {
+  const currentDate = new Date();
+  const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
+  const { table_id } = req.params;
+
+  if (!table_id) {
+    return res.status(400).send({
+      success: false,
+      message: "Table ID is required",
+    });
+  }
+
+  const table = await Table.findOne({ _id: table_id });
+
+  if (!table) {
+    return res.status(404).send({
+      success: false,
+      message: "Table not found",
+    });
+  }
+
+  const tableOrders = table.order;
+
+  const filter = { _id: { $in: tableOrders } };
+
+  await Order.updateMany(filter, {
+    $set: {
+      status: req.body.status,
+      updatedAt: gmtPlus5Date,
+    },
+  });
+
+  table.empty = true;
+  table.order = [];
+  table.updatedAt = gmtPlus5Date;
+
+  await table.save();
+
+  const receiverIds = await getReceiverSocketId({ role: "employer" });
+  const admin = await getReceiverSocketId({ role: "admin" });
+
+  if (admin) {
+    io.to(admin).emit("updateTable", table);
+    io.to(admin).emit("reflesh", "reflesh");
+  }
+
+  if (receiverIds) {
+    console.log(receiverIds);
+    
+    for (const key in receiverIds) {
+      io.to(receiverIds[key]).emit("updateTable", table);
+      io.to(receiverIds[key]).emit("reflesh", "reflesh");
+    }
+  }
+
+  return res.send({
+    success: true,
+    message: "Table order changed successfully",
     table,
   });
 };

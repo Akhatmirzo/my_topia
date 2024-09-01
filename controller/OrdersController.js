@@ -1,22 +1,30 @@
 const Order = require("../model/OrderModel");
 const Table = require("../model/TableModel");
-const { getReceiverSocketId } = require("../socket/websocket");
+const { getReceiverSocketId, io } = require("../socket/websocket");
+const { oneDayStartToEnd } = require("../utils/checkStatisticsDate");
 const { totalPriceForProducts } = require("../utils/helper");
 
 exports.CreateOrder = async (req, res) => {
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
-  const body = req.body;
+  const { products, table_number } = req.body;
 
-  if (!body.products || body.products.length === 0) {
+  if (!products || products.length === 0) {
     return res.status(400).send({
       success: false,
       message: "products are required",
     });
   }
 
+  if (!table_number) {
+    return res.status(400).send({
+      success: false,
+      message: "Table number is required",
+    });
+  }
+
   try {
-    const table = await Table.findOne({ table_number: body.table_number });
+    const table = await Table.findOne({ table_number: table_number });
 
     if (!table) {
       return res.status(404).send({
@@ -25,10 +33,11 @@ exports.CreateOrder = async (req, res) => {
       });
     }
 
-    const total_price = totalPriceForProducts(body.products);
+    const { total_price, newProducts } = totalPriceForProducts(products);
 
     const order = new Order({
-      ...body,
+      products: newProducts,
+      table_number,
       total_price,
       createdAt: gmtPlus5Date,
       updatedAt: gmtPlus5Date,
@@ -45,32 +54,45 @@ exports.CreateOrder = async (req, res) => {
 
     orderIds.push(order._id);
 
+    let newOrder = await order.populate("products.product_id");
+
     // Update table status
-    await Table.findOneAndUpdate(
-      { table_number: body.table_number },
-      {
-        $set: {
-          empty: false,
-          order: orderIds,
-          updatedAt: gmtPlus5Date,
-        },
+
+    table.empty = false;
+    table.order = orderIds;
+    table.updatedAt = gmtPlus5Date;
+
+    await table.save();
+
+    const newTable = await table.populate({
+      path: "order", // order maydonini populate qilamiz
+      populate: {
+        path: "products.product_id", // order ichidagi product_id ni populate qilamiz
+        model: "Product", // Bu 'Product' modeliga murojaat
+      },
+    });
+
+    const receiverIds = await getReceiverSocketId({ role: "employer" });
+    const admin = await getReceiverSocketId({ role: "admin" });
+
+    console.log("admin", admin);
+    console.log("employer", receiverIds);
+
+    if (admin) {
+      io.to(admin).emit("newOrder", { newOrder });
+      io.to(admin).emit("updateTable", newTable);
+    }
+
+    if (receiverIds) {
+      for (const key in receiverIds) {
+        io.to(receiverIds[key]).emit("newOrder", { newOrder });
+        io.to(receiverIds[key]).emit("updateTable", newTable);
       }
-    );
-
-    const receiverIds = getReceiverSocketId({ role: "employer" });
-
-    if (receiverIds.length > 0) {
-      console.log(receiverIds);
-
-      // receiverIds.forEach((receiverId) => {
-      //   io.to(receiverId).emit("newOrder", { orderId: order._id });
-      // });
     }
 
     return res.status(201).send({
       success: true,
       message: "Order created successfully",
-      order,
     });
   } catch (error) {
     return res.status(500).send({
@@ -83,12 +105,7 @@ exports.CreateOrder = async (req, res) => {
 exports.GetOrders = async (req, res) => {
   let handler = {};
 
-  const today = new Date();
-  const gmtPlus5Date = new Date(today.getTime() + 5 * 60 * 60 * 1000);
-  const todayStart = new Date(gmtPlus5Date.setHours(0, 0, 0, 0)); // Kunning boshini olish
-  const todayEnd = new Date(gmtPlus5Date.setHours(23, 59, 59, 999));
-
-  console.log(todayStart, todayEnd);
+  const { todayStart, todayEnd } = oneDayStartToEnd();
 
   if (req.role === "employer") {
     handler = {
@@ -104,13 +121,6 @@ exports.GetOrders = async (req, res) => {
     .sort({
       createdAt: -1,
     });
-
-  if (!orders || orders.length === 0) {
-    return res.status(400).send({
-      success: false,
-      message: "No orders found",
-    });
-  }
 
   return res.status(200).send({
     success: true,
@@ -169,26 +179,44 @@ exports.UpdateOrder = async (req, res) => {
     });
   }
 
-  if (order.status === "paid") {
-    const table = await Table.findOne({ table_number: order.table_number });
+  const updateOrder = await Order.findOne({ _id: id });
 
-    const editTableOrders = table.order.filter(
-      (tableOrder) => tableOrder !== order._id
-    );
+  const receiverIds = await getReceiverSocketId({ role: "employer" });
+  const admin = await getReceiverSocketId({ role: "admin" });
 
-    const updateTableObj = {
-      empty: editTableOrders.length === 0,
-      order: [...editTableOrders],
-      updatedAt: gmtPlus5Date,
-    };
+  console.log("admin", admin);
+  console.log("employer", receiverIds);
 
-    await Table.findOneAndUpdate(
-      { table_number: order.table_number },
-      {
-        $set: updateTableObj,
-      }
-    );
+  if (admin) {
+    io.to(admin).emit("updateOrder", { updateOrder });
   }
+
+  if (receiverIds.length > 0) {
+    for (const key in receiverIds) {
+      io.to(receiverIds[key]).emit("updateOrder", { updateOrder });
+    }
+  }
+
+  // if (order.status === "paid") {
+  //   const table = await Table.findOne({ table_number: order.table_number });
+
+  //   const editTableOrders = table.order.filter(
+  //     (tableOrder) => tableOrder !== order._id
+  //   );
+
+  //   const updateTableObj = {
+  //     empty: editTableOrders.length === 0,
+  //     order: [...editTableOrders],
+  //     updatedAt: gmtPlus5Date,
+  //   };
+
+  //   await Table.findOneAndUpdate(
+  //     { table_number: order.table_number },
+  //     {
+  //       $set: updateTableObj,
+  //     }
+  //   );
+  // }
 
   return order.status(200).send({
     success: true,
@@ -216,6 +244,25 @@ exports.DeleteOrder = async (req, res) => {
       message: "Order was not found",
     });
   }
+
+  const table = await Table.findOne({ table_number: order.table_number });
+
+  const editTableOrders = table.order.filter(
+    (tableOrder) => tableOrder !== order._id
+  );
+
+  const updateTableObj = {
+    empty: editTableOrders.length === 0,
+    order: [...editTableOrders],
+    updatedAt: gmtPlus5Date,
+  };
+
+  await Table.findOneAndUpdate(
+    { table_number: order.table_number },
+    {
+      $set: updateTableObj,
+    }
+  );
 
   return res.status(200).send({
     success: true,

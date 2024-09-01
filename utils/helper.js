@@ -1,28 +1,35 @@
 const os = require("os");
 
 function totalPriceForProducts(products) {
-  const total_price = products.reduce(
-    (acc, { options, price, quantity, additions }) => {
-      let addditionsPrices = 0;
+  const newProducts = products.map((product) => {
+    const newProduct = { ...product };
+    let totalPrice = 0;
 
-      if (additions?.length > 0) {
-        additions.forEach((addition) => {
-          addditionsPrices += Number(addition.price);
-        });
-      }
+    if (newProduct.options) {
+      totalPrice =
+        (totalPrice + Number(newProduct.options.price)) * newProduct.quantity;
+    }
 
-      if (options) {
-        const amount =
-          acc + Number(options.price) + addditionsPrices * quantity;
-        return amount;
-      } else {
-        return acc + Number(price) + addditionsPrices * quantity;
-      }
-    },
-    0
-  );
+    if (newProduct.price) {
+      totalPrice =
+        (totalPrice + Number(newProduct.price)) * newProduct.quantity;
+    }
 
-  return total_price;
+    if (newProduct.additions.length > 0) {
+      newProduct.additions.forEach((addition) => {
+        totalPrice = totalPrice + Number(addition.price) * newProduct.quantity;
+      });
+    }
+
+    newProduct.totalPrice = totalPrice;
+    return newProduct;
+  });
+
+  const total_price = newProducts.reduce((acc, { totalPrice }) => {
+    return acc + totalPrice;
+  }, 0);
+
+  return { total_price, newProducts };
 }
 
 function getLocalIPAddress() {
