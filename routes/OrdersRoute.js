@@ -1,9 +1,9 @@
 const {
   CreateOrder,
-  GetOrders,
   GetOrder,
-  UpdateOrder,
   DeleteOrder,
+  CheckingOrders,
+  OrdersPaginations,
 } = require("../controller/OrdersController");
 const auth = require("../middlewares/auth");
 const { errorHandler } = require("../utils/errorHandler");
@@ -41,8 +41,12 @@ function OrdersRoute(fastify, options, done) {
           description: "Admin Token",
         },
       },
+      query: {
+        page: { type: "number", default: 1 },
+        pageSize: { type: "number", default: 10 },
+      },
     },
-    handler: errorHandler(GetOrders),
+    handler: errorHandler(OrdersPaginations),
   });
 
   fastify.get("/one/:id", {
@@ -59,18 +63,19 @@ function OrdersRoute(fastify, options, done) {
     handler: errorHandler(GetOrder),
   });
 
-  fastify.put("/update/:id", {
-    preHandler: [auth(["admin", "employer"])],
+  fastify.post("/check/orders", {
     schema: {
       tags: ["Order"],
-      headers: {
-        authorization: {
-          type: "string",
-          description: "Admin Token",
+      body: {
+        type: "object",
+        properties: {
+          ids: {
+            type: "array",
+          },
         },
       },
     },
-    handler: errorHandler(UpdateOrder),
+    handler: errorHandler(CheckingOrders),
   });
 
   fastify.delete("/delete/:id", {

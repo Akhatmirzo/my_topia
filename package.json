@@ -15,17 +15,22 @@
     "@fastify/static": "^6.11.2",
     "@fastify/swagger": "^8.10.1",
     "@fastify/swagger-ui": "^1.9.3",
+    "@fastify/view": "^9.1.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
     "fastify": "^4.28.1",
     "fastify-multer": "^2.0.3",
     "fastify-multipart": "^5.4.0",
     "fastify-socket.io": "^5.0.0",
+    "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "moment-timezone": "^0.5.45",
     "mongoose": "^7.5.3",
+    "puppeteer": "^23.2.2",
     "request-ip": "^3.3.0",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5"
   },
   "author": "Akhatmirzo Umarov",
   "license": "ISC"

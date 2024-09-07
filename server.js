@@ -2,12 +2,20 @@ const dotenv = require("dotenv");
 dotenv.config();
 const { default: mongoose } = require("mongoose");
 const cors = require("@fastify/cors");
-const { fastify } = require("./socket/websocket")
+const { fastify } = require("./socket/websocket");
 
 //? Multer setup
 const multer = require("fastify-multer");
 fastify.register(multer.contentParser);
 const path = require("path");
+const ejs = require('ejs');
+
+fastify.register(require('@fastify/view'), {
+  engine: {
+    ejs: ejs,
+  },
+  root: path.join(__dirname, 'views'), // EJS shablonlari joylashgan papka
+});
 
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "/uploads"),
@@ -74,9 +82,6 @@ fastify.register(require("./routes/TableRoute"), {
   prefix: "/api/table",
 });
 
-fastify.register(require("./routes/WareHouseProductsRoute"), {
-  prefix: "/api/warehouse",
-});
 fastify.register(require("./routes/StatisticsRoute"), {
   prefix: "/api/statistics",
 });

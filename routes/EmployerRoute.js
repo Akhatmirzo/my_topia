@@ -95,16 +95,6 @@ function EmployerRoute(fastify, options, done) {
     schema: {
       tags: ["Employer"],
 
-      body: {
-        type: "object",
-        properties: {
-          fullname: {
-            type: "string",
-            default: "testemp",
-          },
-        },
-      },
-
       headers: {
         authorization: {
           type: "string",
