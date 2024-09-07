@@ -1,6 +1,7 @@
 const Employer = require("../model/EmployerModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { io, getReceiverSocketId } = require("../socket/websocket");
 
 exports.employerRegister = async (req, res) => {
   const currentDate = new Date();
@@ -136,29 +137,31 @@ exports.employerUpdate = async (req, res) => {
   const currentDate = new Date();
   const gmtPlus5Date = new Date(currentDate.getTime() + 5 * 60 * 60 * 1000);
   const { id } = req.params;
-  const { fullname, phoneNumber } = req.body;
 
-  if (!fullname || !id) {
+  if (!id) {
     return res.status(400).send({
       success: false,
-      message: "Fullname and id is required",
+      message: "id is required",
     });
   }
 
-  const editEmployer = {
-    fullname,
-    updatedAt: gmtPlus5Date,
+  let hashedPassword = null;
+
+  if (req.body.password) {
+    hashedPassword = await bcrypt.hash(req.body.password, 10);
   }
 
-  if (phoneNumber) {
-    editEmployer.phoneNumber = phoneNumber;
-  }
+  const editEmployer = {
+    ...req.body,
+    password: hashedPassword,
+    updatedAt: gmtPlus5Date,
+  };
 
   const employer = await Employer.findByIdAndUpdate(
     { _id: id },
     {
       $set: {
-        ...editEmployer
+        ...editEmployer,
       },
     }
   );
@@ -169,6 +172,11 @@ exports.employerUpdate = async (req, res) => {
       message: "Employer not found",
     });
   }
+
+  const receiverId = getReceiverSocketId({ receiverId: id });
+  console.log("refreshToken", receiverId);
+
+  io.to(receiverId).emit("refreshToken", employer._id);
 
   return res.status(200).send({
     success: true,

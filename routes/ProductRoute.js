@@ -54,7 +54,7 @@ function ProductRoute(fastify, options, done) {
       query: {
         type: "object",
         properties: {
-          category: {
+          category_id: {
             type: "string",
             default: "",
           },

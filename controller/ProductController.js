@@ -42,16 +42,16 @@ exports.CreateProduct = async (req, res) => {
 };
 
 exports.GetProducts = async (req, res) => {
-  const { category } = req.query;
+  const { category_id } = req.query;
 
   let products = null;
 
   let findingProduct = {};
 
-  if (category) {
+  if (category_id) {
     findingProduct = {
       ...findingProduct,
-      category_id: category,
+      category_id: category_id,
       deleted: false,
     };
   }
@@ -234,7 +234,7 @@ exports.GetProductWebPage = async (req, res) => {
     });
   }
 
-  let product = await Products.findOne({ _id: id });
+  let product = await Products.findOne({ _id: id, deleted: false });
 
   if (!product) {
     return res.status(404).send({

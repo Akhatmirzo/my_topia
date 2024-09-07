@@ -1,5 +1,6 @@
 const Categories = require("../model/CategoriesModel");
 const fs = require("fs");
+const Products = require("../model/ProductsModel");
 
 exports.categoriesCreate = async (req, res) => {
   const currentDate = new Date();
@@ -24,7 +25,7 @@ exports.categoriesCreate = async (req, res) => {
     name,
     image: image[0],
     createdAt: gmtPlus5Date,
-    updatedAt: gmtPlus5Date
+    updatedAt: gmtPlus5Date,
   });
 
   await category.save();
@@ -138,6 +139,15 @@ exports.categoryDelete = async (req, res) => {
       message: "Category was not found",
     });
   }
+
+  await Products.updateMany(
+    { category_id: category._id },
+    {
+      $set: {
+        deleted: true,
+      },
+    }
+  );
 
   const oldImages = category.image;
 

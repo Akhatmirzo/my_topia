@@ -1,8 +1,12 @@
 const webSocket = require("socket.io");
 const Admin = require("../model/AdminModel");
 const Employer = require("../model/EmployerModel");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const fastify = require("fastify")();
+
+const userSocketMap = {}; // {userId: socketId}
+const employerSocketMap = {}; // {userId: socketId}
+let adminSocketMap = null; // {userId: socketId}
 
 const server = fastify.server;
 const io = webSocket(server, {
@@ -13,17 +17,13 @@ const io = webSocket(server, {
 });
 
 const getReceiverSocketId = ({ role, receiverId }) => {
-  if (receiverId) return userSocketMap[receiverId];
+  if (receiverId) return employerSocketMap[receiverId];
   else if (role === "employer") {
     return employerSocketMap;
-  }else if (role === "admin") {
+  } else if (role === "admin") {
     return adminSocketMap;
   }
 };
-
-const userSocketMap = {}; // {userId: socketId}
-const employerSocketMap = {}; // {userId: socketId}
-let adminSocketMap = null; // {userId: socketId}
 
 io.on("connection", async (socket) => {
   console.log("a user connected", socket.id);
@@ -43,7 +43,6 @@ io.on("connection", async (socket) => {
       const { phoneNumber, role } = decoded;
 
       console.log(phoneNumber, role, socket.id);
-      
 
       if (role === "admin") {
         const user = await Admin.findOne({ phoneNumber }).exec();
