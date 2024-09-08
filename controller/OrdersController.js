@@ -80,6 +80,15 @@ exports.CreateOrder = async (req, res) => {
       },
     });
 
+    const today = new Date(newOrder.createdAt);
+
+    const formattedDate = `${today.getDate()}-${
+      today.getMonth() + 1
+    }-${today.getFullYear()}T${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
+
+    const fileName = `${formattedDate}-----${newOrder._id}.pdf`;
+    const pdfBuffer = await generatePDFBuffer(newOrder);
+
     const receiverIds = await getReceiverSocketId({ role: "employer" });
     const admin = await getReceiverSocketId({ role: "admin" });
 
@@ -95,23 +104,9 @@ exports.CreateOrder = async (req, res) => {
       for (const key in receiverIds) {
         io.to(receiverIds[key]).emit("newOrder", { newOrder });
         io.to(receiverIds[key]).emit("updateTable", newTable);
+        io.emit("print", { fileName, fileContent: pdfBuffer });
       }
     }
-
-    const today = new Date(newOrder.createdAt);
-
-    const formattedDate = `${today.getDate()}-${
-      today.getMonth() + 1
-    }-${today.getFullYear()}T${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
-
-    console.log(formattedDate);
-
-    const fileName = `${formattedDate}-----${newOrder._id}.pdf`;
-    const pdfBuffer = await generatePDFBuffer(newOrder);
-
-    console.log(fileName, pdfBuffer);
-
-    io.emit("print", { fileName, fileContent: pdfBuffer });
 
     return res.status(201).send({
       success: true,

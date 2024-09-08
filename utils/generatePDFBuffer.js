@@ -1,14 +1,19 @@
 const puppeteer = require("puppeteer");
-const path = require('path');
-const ejs = require('ejs');
+const path = require("path");
+const ejs = require("ejs");
 
 async function generatePDFBuffer(data) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    executablePath: "/usr/bin/chromium-browser",
+    headless: true,
+  });
   const page = await browser.newPage();
   console.log(data);
-  
 
-  const html = await ejs.renderFile(path.join(__dirname, './../views', 'Check.ejs'), data);
+  const html = await ejs.renderFile(
+    path.join(__dirname, "./../views", "Check.ejs"),
+    data
+  );
   // HTMLni sahifaga qo‘shish
   await page.setContent(html);
 
