@@ -3,9 +3,7 @@ const Table = require("../model/TableModel");
 const { getReceiverSocketId, io } = require("../socket/websocket");
 const {
   oneDayStartToEnd,
-  getGmt5Plus,
 } = require("../utils/checkStatisticsDate");
-const { generatePDFBuffer } = require("../utils/generatePDFBuffer");
 const { totalPriceForProducts } = require("../utils/helper");
 
 exports.CreateOrder = async (req, res) => {
@@ -80,15 +78,6 @@ exports.CreateOrder = async (req, res) => {
       },
     });
 
-    const today = new Date(newOrder.createdAt);
-
-    const formattedDate = `${today.getDate()}-${
-      today.getMonth() + 1
-    }-${today.getFullYear()}T${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
-
-    const fileName = `${formattedDate}-----${newOrder._id}.pdf`;
-    const pdfBuffer = await generatePDFBuffer(newOrder);
-
     const receiverIds = await getReceiverSocketId({ role: "employer" });
     const admin = await getReceiverSocketId({ role: "admin" });
 
@@ -104,9 +93,10 @@ exports.CreateOrder = async (req, res) => {
       for (const key in receiverIds) {
         io.to(receiverIds[key]).emit("newOrder", { newOrder });
         io.to(receiverIds[key]).emit("updateTable", newTable);
-        io.emit("print", { fileName, fileContent: pdfBuffer });
       }
     }
+
+    io.emit("print", newOrder);
 
     return res.status(201).send({
       success: true,
