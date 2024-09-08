@@ -8,14 +8,6 @@ const { fastify } = require("./socket/websocket");
 const multer = require("fastify-multer");
 fastify.register(multer.contentParser);
 const path = require("path");
-const ejs = require('ejs');
-
-fastify.register(require('@fastify/view'), {
-  engine: {
-    ejs: ejs,
-  },
-  root: path.join(__dirname, 'views'), // EJS shablonlari joylashgan papka
-});
 
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "/uploads"),
@@ -23,7 +15,7 @@ fastify.register(require("@fastify/static"), {
 });
 
 fastify.register(cors, {
-  origin: "*",
+  origin: "http://13.60.185.148",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 });
