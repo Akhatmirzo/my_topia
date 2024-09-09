@@ -64,7 +64,7 @@ function TableRoute(fastify, options, done) {
       body: {
         type: "object",
         properties: {
-          status: { type: "string", enum: ["pending", "paid"] },
+          status: { type: "string", enum: ["paid", "cancelled"] },
         },
       },
     },
