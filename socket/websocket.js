@@ -11,7 +11,7 @@ let adminSocketMap = null; // {userId: socketId}
 const server = fastify.server;
 const io = webSocket(server, {
   cors: {
-    origin: "http://13.60.185.148",
+    origin: "*",
     methods: "*",
   },
 });
